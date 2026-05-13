@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Checkout Nauli Wear</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  font-family:'Inter',sans-serif;
+  background:#1e1e1e;
+  color:white;
+}
+
+.container{
+  max-width:1200px;
+  margin:auto;
+  padding:40px 20px;
+
+  display:grid;
+  grid-template-columns:2fr 1fr;
+  gap:30px;
+}
+
+.card{
+  background:#111;
+  padding:30px;
+  border-radius:20px;
+}
+
+h2{
+  font-family:'Playfair Display';
+  margin-bottom:20px;
+}
+
+.input-group{
+  margin-bottom:20px;
+}
+
+.input-group label{
+  display:block;
+  margin-bottom:8px;
+  color:#ccc;
+}
+
+.input-group input,
+.input-group select,
+.input-group textarea{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:10px;
+  background:#222;
+  color:white;
+}
+
+textarea{
+  resize:none;
+  height:100px;
+}
+
+.summary-item{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:15px;
+  padding-bottom:10px;
+  border-bottom:1px solid #333;
+}
+
+.total{
+  font-size:22px;
+  color:#c9a36b;
+  margin-top:20px;
+}
+
+.checkout-btn{
+  width:100%;
+  padding:16px;
+  margin-top:20px;
+  border:none;
+  background:#c9a36b;
+  color:black;
+  font-weight:bold;
+  cursor:pointer;
+  border-radius:10px;
+  font-size:16px;
+}
+
+.checkout-btn:hover{
+  background:white;
+}
+
+.back{
+  display:inline-block;
+  margin-bottom:20px;
+  color:#c9a36b;
+  text-decoration:none;
+}
+
+@media(max-width:900px){
+
+  .container{
+    grid-template-columns:1fr;
+  }
+
+}
+
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- FORM -->
+  <div class="card">
+
+    <a href="index.html" class="back">← Kembali Belanja</a>
+
+    <h2>Checkout</h2>
+
+    <div class="input-group">
+      <label>Nama Lengkap</label>
+      <input type="text" id="nama">
+    </div>
+
+    <div class="input-group">
+      <label>Nomor WhatsApp</label>
+      <input type="text" id="wa">
+    </div>
+
+    <div class="input-group">
+      <label>Email</label>
+      <input type="email" id="email">
+    </div>
+
+    <div class="input-group">
+      <label>Provinsi</label>
+      <select id="provinsi"></select>
+    </div>
+
+    <div class="input-group">
+      <label>Kota / Kabupaten</label>
+      <select id="kota"></select>
+    </div>
+
+    <div class="input-group">
+      <label>Kecamatan</label>
+      <select id="kecamatan"></select>
+    </div>
+
+    <div class="input-group">
+      <label>Alamat Lengkap</label>
+      <textarea id="alamat"></textarea>
+    </div>
+
+    <div class="input-group">
+      <label>Ekspedisi</label>
+      <select id="ekspedisi">
+        <option>JNE</option>
+        <option>J&T</option>
+        <option>SiCepat</option>
+        <option>Gojek</option>
+      </select>
+    </div>
+
+    <div class="input-group">
+      <label>Metode Pembayaran</label>
+      <select id="bayar">
+        <option>Transfer Bank</option>
+        <option>DANA</option>
+        <option>OVO</option>
+        <option>QRIS</option>
+        <option>COD</option>
+      </select>
+    </div>
+
+    <button class="checkout-btn" onclick="checkoutWA()">
+      Checkout Sekarang
+    </button>
+
+  </div>
+
+  <!-- RINGKASAN -->
+  <div class="card">
+
+    <h2>Ringkasan Pesanan</h2>
+
+    <div id="summary"></div>
+
+    <div class="total" id="total">
+      Total: Rp 0
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+function removeItem(index){
+
+  cart.splice(index,1);
+
+  localStorage.setItem(
+    'checkout',
+    JSON.stringify(cart)
+  );
+
+  location.reload();
+
+}
+// AMBIL CART
+const cart =
+JSON.parse(localStorage.getItem('checkout')) || [];
+
+const summary =
+document.getElementById('summary');
+
+let total = 0;
+
+summary.innerHTML = "";
+
+cart.forEach((item,index) => {
+
+  const subtotal =
+  item.harga * item.qty;
+
+  total += subtotal;
+
+  summary.innerHTML += `
+
+    <div class="summary-item">
+
+      <div>
+
+        <b>${item.nama}</b><br>
+
+        ${item.qty} x
+        Rp ${item.harga.toLocaleString()}
+
+      </div>
+
+      <div style="text-align:right;">
+
+        Rp ${subtotal.toLocaleString()}
+
+        <br><br>
+
+        <button
+          onclick="removeItem(${index})"
+          style="
+            background:red;
+            color:white;
+            border:none;
+            padding:6px 10px;
+            border-radius:6px;
+            cursor:pointer;
+          "
+        >
+          Hapus
+        </button>
+
+      </div>
+
+    </div>
+
+  `;
+
+});
+
+document.getElementById('total')
+.innerText =
+'Total: Rp ' + total.toLocaleString();
+
+// CHECKOUT WA
+function checkoutWA(){
+
+  const nama = document.getElementById('nama').value;
+
+  const wa = document.getElementById('wa').value;
+
+  const alamat = document.getElementById('alamat').value;
+
+  let text = `Halo Nauli Wear%0A%0A`;
+
+  text += `Nama: ${nama}%0A`;
+  text += `No WA: ${wa}%0A`;
+  text += `Alamat: ${alamat}%0A%0A`;
+
+  text += `Pesanan:%0A`;
+
+  cart.forEach((item,index) => {
+
+    text += `- ${item.nama} x${item.qty}%0A`;
+
+  });
+
+  text += `%0ATotal: Rp ${total.toLocaleString()}`;
+
+  window.open(`https://wa.me/6281234567890?text=${text}`);
+
+}
+
+
+// API WILAYAH INDONESIA
+const provinsi = document.getElementById('provinsi');
+const kota = document.getElementById('kota');
+const kecamatan = document.getElementById('kecamatan');
+
+async function loadProvinsi(){
+
+  const res = await fetch(
+    'https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json'
+  );
+
+  const data = await res.json();
+
+  provinsi.innerHTML = '<option>Pilih Provinsi</option>';
+
+  data.forEach(p => {
+
+    provinsi.innerHTML += `
+      <option value="${p.id}">
+        ${p.name}
+      </option>
+    `;
+
+  });
+
+}
+
+provinsi.onchange = async function(){
+
+  const res = await fetch(
+    `https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${this.value}.json`
+  );
+
+  const data = await res.json();
+
+  kota.innerHTML = '';
+
+  data.forEach(k => {
+
+    kota.innerHTML += `
+      <option value="${k.id}">
+        ${k.name}
+      </option>
+    `;
+
+  });
+
+}
+
+kota.onchange = async function(){
+
+  const res = await fetch(
+    `https://www.emsifa.com/api-wilayah-indonesia/api/districts/${this.value}.json`
+  );
+
+  const data = await res.json();
+
+  kecamatan.innerHTML = '';
+
+  data.forEach(k => {
+
+    kecamatan.innerHTML += `
+      <option>
+        ${k.name}
+      </option>
+    `;
+
+  });
+
+}
+
+loadProvinsi();
+
+</script>
+
+</body>
+</html>
